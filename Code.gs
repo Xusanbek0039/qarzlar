@@ -53,7 +53,8 @@ function getHeaderMap_(sheet) {
     familiya: find(['familiya', 'surname']),
     yil: find(["tug'ilgan yil", 'tugilgan yil', 'yil']),
     qarz: find(['joriy qarz', 'qarz', 'debt']),
-    sana: find(["oxirgi to'lov", 'oxirgi tolov', "oxirgi to'lov sanasi", 'sana', 'last payment'])
+    sana: find(["oxirgi to'lov", 'oxirgi tolov', "oxirgi to'lov sanasi", 'sana', 'last payment']),
+    telefon: find(['telefon', 'tel', 'phone', 'raqam'])
   };
 }
 
@@ -66,10 +67,20 @@ function ensureSanaCol_(sheet) {
   return col;
 }
 
+// "Telefon" ustunini ta'minlaydi (yo'q bo'lsa yaratadi). 1-based indeks qaytaradi.
+function ensureTelefonCol_(sheet) {
+  var h = getHeaderMap_(sheet);
+  if (h.telefon >= 0) return h.telefon + 1;
+  var col = sheet.getLastColumn() + 1;
+  sheet.getRange(1, col).setValue('Telefon');
+  return col;
+}
+
 // Barcha mijozlarni qaytaradi
 function getClients() {
   var sheet = getSheet_();
   ensureSanaCol_(sheet);
+  ensureTelefonCol_(sheet);
   var h = getHeaderMap_(sheet);
   var lastRow = sheet.getLastRow();
   if (lastRow < 2) return [];
@@ -110,7 +121,8 @@ function getClients() {
       yil: h.yil >= 0 ? r[h.yil] : '',
       qarz: Number(h.qarz >= 0 ? r[h.qarz] : 0) || 0,
       sana: sanaStr,
-      kun: kun
+      kun: kun,
+      telefon: h.telefon >= 0 ? String(r[h.telefon] || '') : ''
     });
   }
   return out;
@@ -146,7 +158,7 @@ function changeDebt(row, amount) {
 }
 
 // Yangi mijoz qo'shish
-function addClient(ism, familiya, yil, qarz) {
+function addClient(ism, familiya, yil, qarz, telefon) {
   var lock = LockService.getScriptLock();
   lock.waitLock(10000);
   try {
@@ -162,6 +174,8 @@ function addClient(ism, familiya, yil, qarz) {
     if (h.familiya >= 0) rowData[h.familiya] = familiya;
     if (h.yil >= 0) rowData[h.yil] = yil;
     if (h.qarz >= 0) rowData[h.qarz] = Number(qarz) || 0;
+    var telCol = ensureTelefonCol_(sheet) - 1; // 0-based
+    if (telCol < rowData.length) rowData[telCol] = telefon || '';
     sheet.getRange(newRow, 1, 1, lastCol).setValues([rowData]);
     // Boshlang'ich qarz bo'lsa — boshlanish sanasini yozamiz
     if ((Number(qarz) || 0) > 0) {
@@ -175,7 +189,7 @@ function addClient(ism, familiya, yil, qarz) {
 }
 
 // Mijoz ma'lumotlarini tahrirlash (qarzga tegmaydi)
-function updateClient(row, ism, familiya, yil) {
+function updateClient(row, ism, familiya, yil, telefon) {
   var lock = LockService.getScriptLock();
   lock.waitLock(10000);
   try {
@@ -184,6 +198,8 @@ function updateClient(row, ism, familiya, yil) {
     if (h.ism >= 0) sheet.getRange(row, h.ism + 1).setValue(ism);
     if (h.familiya >= 0) sheet.getRange(row, h.familiya + 1).setValue(familiya);
     if (h.yil >= 0) sheet.getRange(row, h.yil + 1).setValue(yil);
+    var telCol = ensureTelefonCol_(sheet);
+    sheet.getRange(row, telCol).setValue(telefon || '');
     return true;
   } finally {
     lock.releaseLock();

@@ -25,8 +25,11 @@
       padding: 16px;
     }
     .wrap { max-width: 1000px; margin: 0 auto; }
-    h1 { font-size: 22px; margin: 0 0 4px; }
+    h1 { font-size: 22px; margin: 0 0 4px; display: flex; align-items: center; gap: 8px; }
     .sub { color: var(--muted); font-size: 13px; margin-bottom: 16px; }
+
+    /* Icon alignment */
+    svg.icon { display: inline-block; vertical-align: middle; flex-shrink: 0; }
 
     .bar {
       display: flex; gap: 10px; flex-wrap: wrap;
@@ -37,6 +40,7 @@
       display: flex; align-items: center; gap: 8px;
       background: var(--card); border: 1px solid var(--line);
       border-radius: 10px; padding: 10px 14px;
+      color: var(--muted);
     }
     .search input {
       border: none; outline: none; background: transparent;
@@ -47,6 +51,7 @@
       padding: 10px 16px; font-size: 14px; font-weight: 600;
       color: #fff; background: var(--blue);
       transition: opacity .15s;
+      display: inline-flex; align-items: center; gap: 6px;
     }
     .btn:hover { opacity: .9; }
     .btn.green { background: var(--green); }
@@ -59,6 +64,7 @@
       flex: 1; border: 1px solid var(--line); background: var(--card);
       color: var(--muted); border-radius: 10px; padding: 12px; font-size: 15px;
       font-weight: 600; cursor: pointer;
+      display: inline-flex; align-items: center; justify-content: center; gap: 7px;
     }
     .tab.active { background: var(--accent); border-color: var(--accent); color: #06283b; }
 
@@ -72,8 +78,8 @@
     .stat.danger { border-color: var(--red); background: rgba(239,68,68,.08); }
     .stat.danger .val { color: var(--red); }
 
-    .dash-head { display: flex; align-items: baseline; gap: 10px; margin: 4px 0 12px; flex-wrap: wrap; }
-    .dash-head h2 { font-size: 17px; margin: 0; }
+    .dash-head { display: flex; align-items: center; gap: 8px; margin: 4px 0 12px; flex-wrap: wrap; }
+    .dash-head h2 { font-size: 17px; margin: 0; display: flex; align-items: center; gap: 7px; }
     .muted { color: var(--muted); font-size: 13px; }
 
     .od-card {
@@ -85,14 +91,14 @@
     .od-name { font-size: 16px; font-weight: 700; }
     .od-meta { color: var(--muted); font-size: 13px; margin-top: 3px; }
     .od-right { text-align: right; }
-    .od-debt { font-size: 18px; font-weight: 800; color: var(--red); }
+    .od-debt { font-size: 18px; font-weight: 800; }
     .od-badge {
       display: inline-block; background: rgba(239,68,68,.15); color: #fca5a5;
       border-radius: 999px; padding: 3px 10px; font-size: 12px; font-weight: 700; margin-top: 4px;
     }
     .od-badge.unknown { background: rgba(148,163,184,.15); color: var(--muted); }
     .od-actions { display: flex; gap: 6px; }
-    .od-empty { padding: 30px; text-align: center; color: var(--green); font-weight: 600; }
+    .od-empty { padding: 30px; text-align: center; color: var(--green); font-weight: 600; display: flex; align-items: center; justify-content: center; gap: 8px; width: 100%; }
 
     .table-card {
       background: var(--card); border: 1px solid var(--line);
@@ -106,21 +112,29 @@
       font-size: 12px; text-transform: uppercase; letter-spacing: .5px;
       position: sticky; top: 0;
     }
+    thead th .th-inner { display: inline-flex; align-items: center; gap: 5px; }
     tbody tr { border-top: 1px solid var(--line); }
     tbody tr:hover { background: rgba(255,255,255,.03); }
     .qarz { font-weight: 700; }
-    .qarz.pos { color: var(--red); }
     .qarz.zero { color: var(--muted); }
+
+    /* Qator background rangi — qarz miqdoriga qarab */
+    tbody tr.t1 { background: rgba(34,197,94,.07); border-left: 3px solid rgba(34,197,94,.5); }
+    tbody tr.t2 { background: rgba(250,204,21,.07); border-left: 3px solid rgba(250,204,21,.5); }
+    tbody tr.t3 { background: rgba(239,68,68,.07);  border-left: 3px solid rgba(239,68,68,.5); }
+    tbody tr.t1:hover { background: rgba(34,197,94,.13); }
+    tbody tr.t2:hover { background: rgba(250,204,21,.13); }
+    tbody tr.t3:hover { background: rgba(239,68,68,.13); }
     .actions { display: flex; gap: 6px; }
     .iconbtn {
       border: none; cursor: pointer; border-radius: 8px;
-      width: 30px; height: 30px; font-size: 16px; font-weight: 700;
+      width: 30px; height: 30px; font-size: 15px; font-weight: 700;
       color: #fff; display: inline-flex; align-items: center; justify-content: center;
     }
     .iconbtn.add { background: var(--green); }
     .iconbtn.sub { background: var(--red); }
-    .iconbtn.edit { background: var(--blue); font-size: 13px; }
-    .iconbtn.del { background: var(--line); font-size: 14px; }
+    .iconbtn.edit { background: var(--blue); }
+    .iconbtn.del { background: var(--line); }
 
     .empty { padding: 40px; text-align: center; color: var(--muted); }
     .loading { padding: 40px; text-align: center; color: var(--muted); }
@@ -137,7 +151,7 @@
     }
     .modal h3 { margin: 0 0 14px; font-size: 18px; }
     .field { margin-bottom: 12px; }
-    .field label { display: block; font-size: 12px; color: var(--muted); margin-bottom: 5px; }
+    .field label { display: flex; align-items: center; gap: 5px; font-size: 12px; color: var(--muted); margin-bottom: 5px; }
     .field input {
       width: 100%; padding: 10px 12px; border-radius: 8px;
       border: 1px solid var(--line); background: var(--bg); color: var(--text);
@@ -145,7 +159,7 @@
     }
     .field input:focus { border-color: var(--accent); }
     .modal-actions { display: flex; gap: 10px; margin-top: 8px; }
-    .modal-actions .btn { flex: 1; }
+    .modal-actions .btn { flex: 1; justify-content: center; }
 
     .toast {
       position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%);
@@ -157,28 +171,49 @@
 </head>
 <body>
   <div class="wrap">
-    <h1>💰 Qarzlar boshqaruvi</h1>
+    <h1>
+      <svg class="icon" xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/><path d="M6 14h.01M10 14h4"/></svg>
+      Qarzlar boshqaruvi
+    </h1>
     <div class="sub">Magazin mijozlari qarzlarini boshqarish</div>
 
     <div class="tabs">
-      <button class="tab active" id="tabList" onclick="switchView('list')">📋 Ro'yxat</button>
-      <button class="tab" id="tabDash" onclick="switchView('dash')">📊 Dashboard</button>
+      <button class="tab active" id="tabList" onclick="switchView('list')">
+        <svg class="icon" xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
+        Ro'yxat
+      </button>
+      <button class="tab" id="tabDash" onclick="switchView('dash')">
+        <svg class="icon" xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/><line x1="2" y1="20" x2="22" y2="20"/></svg>
+        Dashboard
+      </button>
     </div>
 
     <div id="viewList">
     <div class="bar">
       <div class="search">
-        🔍
-        <input id="search" type="text" placeholder="Ism, familiya yoki tug'ilgan yil bo'yicha qidirish..." autocomplete="off" />
+        <svg class="icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        <input id="search" type="text" placeholder="Ism, familiya, telefon yoki tug'ilgan yil bo'yicha qidirish..." autocomplete="off" />
       </div>
-      <button class="btn green" onclick="openAddModal()">+ Yangi mijoz</button>
-      <button class="btn gray" onclick="loadData()">↻ Yangilash</button>
+      <button class="btn green" onclick="openAddModal()">
+        <svg class="icon" xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        Yangi mijoz
+      </button>
+      <button class="btn gray" onclick="loadData()">
+        <svg class="icon" xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg>
+        Yangilash
+      </button>
     </div>
 
     <div class="bar">
       <button class="btn filt active" id="fltAll" onclick="setFilter('all')">Hammasi</button>
-      <button class="btn filt" id="fltDebt" onclick="setFilter('debt')">⚠️ Qarz to'lamayotganlar</button>
-      <button class="btn filt" id="fltPaid" onclick="setFilter('paid')">✅ Qarzi yo'qlar</button>
+      <button class="btn filt" id="fltDebt" onclick="setFilter('debt')">
+        <svg class="icon" xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+        Qarz to'lamayotganlar
+      </button>
+      <button class="btn filt" id="fltPaid" onclick="setFilter('paid')">
+        <svg class="icon" xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+        Qarzi yo'qlar
+      </button>
     </div>
 
     <div class="stats">
@@ -193,11 +228,12 @@
           <thead>
             <tr>
               <th>No</th><th>Ism</th><th>Familiya</th><th>Tug'ilgan yil</th>
+              <th><span class="th-inner"><svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12 19.79 19.79 0 0 1 1.62 3.38a2 2 0 0 1 1.99-2.18H6.5a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 8.91a16 16 0 0 0 6.08 6.08l1.77-1.77a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>Telefon</span></th>
               <th>Joriy Qarz</th><th>Oxirgi to'lov</th><th>Amallar</th>
             </tr>
           </thead>
           <tbody id="tbody">
-            <tr><td colspan="7" class="loading">Yuklanmoqda...</td></tr>
+            <tr><td colspan="8" class="loading">Yuklanmoqda...</td></tr>
           </tbody>
         </table>
       </div>
@@ -214,7 +250,10 @@
       </div>
 
       <div class="dash-head">
-        <h2>⚠️ 1 oydan beri to'lamaganlar</h2>
+        <h2>
+          <svg class="icon" xmlns="http://www.w3.org/2000/svg" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+          1 oydan beri to'lamaganlar
+        </h2>
         <span class="muted" id="dHint"></span>
       </div>
       <div id="overdueList"></div>
@@ -228,6 +267,13 @@
       <div class="field"><label>Ism</label><input id="fIsm" type="text" /></div>
       <div class="field"><label>Familiya</label><input id="fFam" type="text" /></div>
       <div class="field"><label>Tug'ilgan yil</label><input id="fYil" type="text" inputmode="numeric" /></div>
+      <div class="field">
+        <label>
+          <svg xmlns="http://www.w3.org/2000/svg" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12 19.79 19.79 0 0 1 1.62 3.38a2 2 0 0 1 1.99-2.18H6.5a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 8.91a16 16 0 0 0 6.08 6.08l1.77-1.77a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+          Telefon raqami
+        </label>
+        <input id="fTel" type="tel" placeholder="+998 XX XXX XX XX" />
+      </div>
       <div class="field"><label>Boshlang'ich qarz</label><input id="fQarz" type="number" value="0" /></div>
       <div class="modal-actions">
         <button class="btn gray" onclick="closeAddModal()">Bekor</button>
@@ -243,6 +289,13 @@
       <div class="field"><label>Ism</label><input id="eIsm" type="text" /></div>
       <div class="field"><label>Familiya</label><input id="eFam" type="text" /></div>
       <div class="field"><label>Tug'ilgan yil</label><input id="eYil" type="text" inputmode="numeric" /></div>
+      <div class="field">
+        <label>
+          <svg xmlns="http://www.w3.org/2000/svg" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12 19.79 19.79 0 0 1 1.62 3.38a2 2 0 0 1 1.99-2.18H6.5a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 8.91a16 16 0 0 0 6.08 6.08l1.77-1.77a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+          Telefon raqami
+        </label>
+        <input id="eTel" type="tel" placeholder="+998 XX XXX XX XX" />
+      </div>
       <div class="modal-actions">
         <button class="btn gray" onclick="closeEditModal()">Bekor</button>
         <button class="btn" onclick="submitEdit()">Saqlash</button>
@@ -255,7 +308,11 @@
     <div class="modal">
       <h3 id="amtTitle">Qarz o'zgartirish</h3>
       <div class="sub" id="amtName"></div>
-      <div class="field"><label>Summa</label><input id="fAmount" type="number" inputmode="numeric" /></div>
+      <div class="field">
+        <label>Summa</label>
+        <input id="fAmount" type="number" inputmode="numeric" />
+        <div id="amtError" style="display:none;margin-top:6px;padding:8px 10px;background:rgba(239,68,68,.12);border:1px solid rgba(239,68,68,.4);border-radius:7px;color:#fca5a5;font-size:13px;"></div>
+      </div>
       <div class="modal-actions">
         <button class="btn gray" onclick="closeAmtModal()">Bekor</button>
         <button class="btn" id="amtConfirm" onclick="submitAmount()">Tasdiqlash</button>
@@ -267,11 +324,21 @@
 
   <script>
     var ALL = [];
-    var amtCtx = null; // {row, sign, name}
+    var amtCtx = null;
     var editRow = null;
-    var FILTER = 'all'; // all | debt | paid
-    var VIEW = 'list';  // list | dash
-    var OVERDUE_DAYS = 30; // 1 oy
+    var FILTER = 'all';
+    var VIEW = 'list';
+    var OVERDUE_DAYS = 30;
+
+    // SVG icon strings for use in JS-generated HTML
+    var IC = {
+      plus:  '<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>',
+      minus: '<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/></svg>',
+      edit:  '<svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>',
+      trash: '<svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>',
+      phone: '<svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12 19.79 19.79 0 0 1 1.62 3.38a2 2 0 0 1 1.99-2.18H6.5a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 8.91a16 16 0 0 0 6.08 6.08l1.77-1.77a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>',
+      check: '<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>'
+    };
 
     function switchView(v) {
       VIEW = v;
@@ -282,7 +349,6 @@
       if (v === 'dash') renderDash();
     }
 
-    // "Oxirgi to'lov" katakcha matni (ro'yxat jadvali uchun)
     function sanaCell(c) {
       var qarz = Number(c.qarz) || 0;
       if (!c.sana) return '<span class="muted">—</span>';
@@ -300,7 +366,10 @@
 
     function fmt(n) {
       n = Number(n) || 0;
-      return n.toLocaleString('uz-UZ');
+      return n.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
+    }
+    function fmtSum(n) {
+      return fmt(n) + " so'm";
     }
 
     function toast(msg) {
@@ -313,7 +382,7 @@
 
     function loadData() {
       document.getElementById('tbody').innerHTML =
-        '<tr><td colspan="7" class="loading">Yuklanmoqda...</td></tr>';
+        '<tr><td colspan="8" class="loading">Yuklanmoqda...</td></tr>';
       google.script.run
         .withSuccessHandler(function (data) {
           ALL = data || [];
@@ -321,7 +390,7 @@
         })
         .withFailureHandler(function (err) {
           document.getElementById('tbody').innerHTML =
-            '<tr><td colspan="7" class="empty">Xato: ' + err.message + '</td></tr>';
+            '<tr><td colspan="8" class="empty">Xato: ' + err.message + '</td></tr>';
         })
         .getClients();
     }
@@ -345,20 +414,20 @@
           String(c.ism).toLowerCase().indexOf(q) >= 0 ||
           String(c.familiya).toLowerCase().indexOf(q) >= 0 ||
           String(c.yil).toLowerCase().indexOf(q) >= 0 ||
-          String(c.no).toLowerCase().indexOf(q) >= 0
+          String(c.no).toLowerCase().indexOf(q) >= 0 ||
+          String(c.telefon || '').replace(/\s/g,'').indexOf(q.replace(/\s/g,'')) >= 0
         );
       });
 
-      // Statistika (umumiy ro'yxat bo'yicha)
       var total = ALL.reduce(function (s, c) { return s + (Number(c.qarz) || 0); }, 0);
       var debtors = ALL.filter(function (c) { return (Number(c.qarz) || 0) > 0; }).length;
       document.getElementById('stCount').textContent = ALL.length;
-      document.getElementById('stTotal').textContent = fmt(total);
+      document.getElementById('stTotal').textContent = fmtSum(total);
       document.getElementById('stDebtors').textContent = debtors;
 
       var tb = document.getElementById('tbody');
       if (list.length === 0) {
-        tb.innerHTML = '<tr><td colspan="7" class="empty">' +
+        tb.innerHTML = '<tr><td colspan="8" class="empty">' +
           (q ? 'Hech narsa topilmadi' : 'Ma\'lumot yo\'q') + '</td></tr>';
         return;
       }
@@ -366,91 +435,97 @@
       var html = '';
       list.forEach(function (c) {
         var qarz = Number(c.qarz) || 0;
-        var cls = qarz > 0 ? 'pos' : 'zero';
+        var rowCls = qarz <= 0 ? '' : qarz >= 3000000 ? 't3' : qarz >= 2000000 ? 't2' : 't1';
         var nm = (esc(c.ism) + ' ' + esc(c.familiya)).trim();
+        var telCell = c.telefon
+          ? '<a href="tel:' + esc(c.telefon) + '" style="color:var(--accent);text-decoration:none;display:inline-flex;align-items:center;gap:4px">' + IC.phone + esc(c.telefon) + '</a>'
+          : '<span class="muted">—</span>';
+        var qarzCls = qarz <= 0 ? 'qarz zero' : 'qarz';
         html +=
-          '<tr>' +
+          '<tr class="' + rowCls + '">' +
           '<td>' + esc(c.no) + '</td>' +
           '<td>' + esc(c.ism) + '</td>' +
           '<td>' + esc(c.familiya) + '</td>' +
           '<td>' + esc(c.yil) + '</td>' +
-          '<td class="qarz ' + cls + '">' + fmt(qarz) + '</td>' +
+          '<td>' + telCell + '</td>' +
+          '<td class="' + qarzCls + '">' + fmtSum(qarz) + '</td>' +
           '<td>' + sanaCell(c) + '</td>' +
           '<td><div class="actions">' +
-          '<button class="iconbtn add" title="Qo\'shish" onclick="openAmt(' + c.row + ',1,\'' + jsstr(nm) + '\')">+</button>' +
-          '<button class="iconbtn sub" title="Ayirish" onclick="openAmt(' + c.row + ',-1,\'' + jsstr(nm) + '\')">−</button>' +
-          '<button class="iconbtn edit" title="Tahrirlash" onclick="openEdit(' + c.row + ')">✏️</button>' +
-          '<button class="iconbtn del" title="O\'chirish" onclick="removeClient(' + c.row + ',\'' + jsstr(nm) + '\')">🗑</button>' +
+          '<button class="iconbtn add" title="Qo\'shish" onclick="openAmt(' + c.row + ',1,\'' + jsstr(nm) + '\')">' + IC.plus + '</button>' +
+          '<button class="iconbtn sub" title="Ayirish" onclick="openAmt(' + c.row + ',-1,\'' + jsstr(nm) + '\')">' + IC.minus + '</button>' +
+          '<button class="iconbtn edit" title="Tahrirlash" onclick="openEdit(' + c.row + ')">' + IC.edit + '</button>' +
+          '<button class="iconbtn del" title="O\'chirish" onclick="removeClient(' + c.row + ',\'' + jsstr(nm) + '\')">' + IC.trash + '</button>' +
           '</div></td>' +
           '</tr>';
       });
       tb.innerHTML = html;
 
       renderDash();
-      }
+    }
 
-      function renderDash() {
+    function renderDash() {
       var debtors = ALL.filter(function (c) { return (Number(c.qarz) || 0) > 0; });
       var total = ALL.reduce(function (s, c) { return s + (Number(c.qarz) || 0); }, 0);
 
-      // 1 oydan beri to'lamaganlar: qarzi bor VA (oxirgi to'lov 30 kundan oshgan YOKI sana noma'lum)
       var overdue = debtors.filter(function (c) {
-      return c.kun > OVERDUE_DAYS || c.kun < 0;
+        return c.kun > OVERDUE_DAYS || c.kun < 0;
       });
-      // Eng ko'p kechikkanlar yuqorida; sana noma'lumlar oxirida
       overdue.sort(function (a, b) {
-      var ka = a.kun < 0 ? -1 : a.kun;
-      var kb = b.kun < 0 ? -1 : b.kun;
-      return kb - ka;
+        var ka = a.kun < 0 ? -1 : a.kun;
+        var kb = b.kun < 0 ? -1 : b.kun;
+        return kb - ka;
       });
 
       var overdueSum = overdue.reduce(function (s, c) { return s + (Number(c.qarz) || 0); }, 0);
 
-      document.getElementById('dTotal').textContent = fmt(total);
+      document.getElementById('dTotal').textContent = fmtSum(total);
       document.getElementById('dDebtors').textContent = debtors.length;
       document.getElementById('dOverdueCount').textContent = overdue.length;
-      document.getElementById('dOverdueSum').textContent = fmt(overdueSum);
+      document.getElementById('dOverdueSum').textContent = fmtSum(overdueSum);
       document.getElementById('dHint').textContent =
-      overdue.length + ' ta mijoz · jami ' + fmt(overdueSum) + " so'm";
+        overdue.length + ' ta mijoz · jami ' + fmtSum(overdueSum);
 
       var box = document.getElementById('overdueList');
       if (overdue.length === 0) {
-      box.innerHTML = '<div class="od-card"><div class="od-empty" style="width:100%">🎉 1 oydan ortiq to\'lamagan mijoz yo\'q!</div></div>';
-      return;
+        box.innerHTML = '<div class="od-card"><div class="od-empty">' + IC.check + ' 1 oydan ortiq to\'lamagan mijoz yo\'q!</div></div>';
+        return;
       }
 
       var html = '';
       overdue.forEach(function (c) {
-      var nm = (esc(c.ism) + ' ' + esc(c.familiya)).trim() || '(ismsiz)';
-      var jnm = jsstr((c.ism + ' ' + c.familiya).trim());
-      var badge, meta;
-      if (c.kun < 0) {
-        badge = '<span class="od-badge unknown">Sana noma\'lum</span>';
-        meta = "Oxirgi to'lov sanasi belgilanmagan";
-      } else {
-        badge = '<span class="od-badge">' + kunLabel(c.kun) + ' to\'lamagan</span>';
-        meta = "Oxirgi to'lov: " + esc(c.sana);
-      }
-      html +=
-        '<div class="od-card">' +
-        '<div class="od-main">' +
-        '<div class="od-name">' + nm + '</div>' +
-        '<div class="od-meta">' + meta + (c.yil ? ' · ' + esc(c.yil) + '-yil' : '') + '</div>' +
-        '</div>' +
-        '<div class="od-right">' +
-        '<div class="od-debt">' + fmt(c.qarz) + " so'm</div>" +
-        badge +
-        '</div>' +
-        '<div class="od-actions">' +
-        '<button class="iconbtn sub" title="To\'lov (ayirish)" onclick="openAmt(' + c.row + ',-1,\'' + jnm + '\')">−</button>' +
-        '<button class="iconbtn add" title="Qo\'shish" onclick="openAmt(' + c.row + ',1,\'' + jnm + '\')">+</button>' +
-        '</div>' +
-        '</div>';
+        var nm = (esc(c.ism) + ' ' + esc(c.familiya)).trim() || '(ismsiz)';
+        var jnm = jsstr((c.ism + ' ' + c.familiya).trim());
+        var badge, meta;
+        if (c.kun < 0) {
+          badge = '<span class="od-badge unknown">Sana noma\'lum</span>';
+          meta = "Oxirgi to'lov sanasi belgilanmagan";
+        } else {
+          badge = '<span class="od-badge">' + kunLabel(c.kun) + ' to\'lamagan</span>';
+          meta = "Oxirgi to'lov: " + esc(c.sana);
+        }
+        var telHtml = c.telefon
+          ? ' · <a href="tel:' + esc(c.telefon) + '" style="color:var(--accent);text-decoration:none;display:inline-flex;align-items:center;gap:3px">' + IC.phone + esc(c.telefon) + '</a>'
+          : '';
+        html +=
+          '<div class="od-card">' +
+          '<div class="od-main">' +
+          '<div class="od-name">' + nm + '</div>' +
+          '<div class="od-meta">' + meta + (c.yil ? ' · ' + esc(c.yil) + '-yil' : '') + telHtml + '</div>' +
+          '</div>' +
+          '<div class="od-right">' +
+          '<div class="od-debt" style="color:' + (c.qarz >= 3000000 ? 'var(--red)' : c.qarz >= 2000000 ? '#facc15' : 'var(--green)') + '">' + fmtSum(c.qarz) + '</div>' +
+          badge +
+          '</div>' +
+          '<div class="od-actions">' +
+          '<button class="iconbtn sub" title="To\'lov (ayirish)" onclick="openAmt(' + c.row + ',-1,\'' + jnm + '\')">' + IC.minus + '</button>' +
+          '<button class="iconbtn add" title="Qo\'shish" onclick="openAmt(' + c.row + ',1,\'' + jnm + '\')">' + IC.plus + '</button>' +
+          '</div>' +
+          '</div>';
       });
       box.innerHTML = html;
-      }
+    }
 
-      function esc(s) {
+    function esc(s) {
       return String(s == null ? '' : s)
         .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
     }
@@ -460,7 +535,8 @@
 
     // --- Qarz o'zgartirish ---
     function openAmt(row, sign, name) {
-      amtCtx = { row: row, sign: sign, name: name };
+      var c = ALL.filter(function (x) { return x.row === row; })[0];
+      amtCtx = { row: row, sign: sign, name: name, qarz: c ? (Number(c.qarz) || 0) : 0 };
       document.getElementById('amtTitle').textContent = sign > 0 ? 'Qarz qo\'shish' : 'Qarz ayirish (to\'lov)';
       document.getElementById('amtName').textContent = name;
       var conf = document.getElementById('amtConfirm');
@@ -468,6 +544,8 @@
       if (sign < 0) conf.style.background = 'var(--red)'; else conf.style.background = '';
       var inp = document.getElementById('fAmount');
       inp.value = '';
+      inp.style.borderColor = '';
+      document.getElementById('amtError').style.display = 'none';
       document.getElementById('amtOverlay').classList.add('show');
       setTimeout(function () { inp.focus(); }, 50);
     }
@@ -475,10 +553,29 @@
       document.getElementById('amtOverlay').classList.remove('show');
       amtCtx = null;
     }
+    function showAmtError(msg) {
+      var el = document.getElementById('amtError');
+      el.textContent = msg;
+      el.style.display = 'block';
+      var inp = document.getElementById('fAmount');
+      inp.style.borderColor = 'var(--red)';
+      inp.focus();
+    }
+
     function submitAmount() {
       if (!amtCtx) return;
       var v = Number(document.getElementById('fAmount').value);
-      if (!v || v <= 0) { toast('To\'g\'ri summa kiriting'); return; }
+      var errEl = document.getElementById('amtError');
+      errEl.style.display = 'none';
+      document.getElementById('fAmount').style.borderColor = '';
+      if (!v || v <= 0) { showAmtError('To\'g\'ri summa kiriting'); return; }
+      if (amtCtx.sign < 0 && v > amtCtx.qarz) {
+        showAmtError(
+          'Joriy qarz: ' + fmtSum(amtCtx.qarz) + '. ' +
+          'Kiritilgan summa (' + fmtSum(v) + ') undan ko\'p — to\'lov qabul qilinmaydi.'
+        );
+        return;
+      }
       var delta = amtCtx.sign * v;
       var row = amtCtx.row;
       closeAmtModal();
@@ -487,7 +584,7 @@
           var c = ALL.filter(function (x) { return x.row === row; })[0];
           if (c) c.qarz = newVal;
           render();
-          toast('Saqlandi. Yangi qarz: ' + fmt(newVal));
+          toast('Saqlandi. Yangi qarz: ' + fmtSum(newVal));
         })
         .withFailureHandler(function (err) { toast('Xato: ' + err.message); })
         .changeDebt(row, delta);
@@ -498,6 +595,7 @@
       document.getElementById('fIsm').value = '';
       document.getElementById('fFam').value = '';
       document.getElementById('fYil').value = '';
+      document.getElementById('fTel').value = '+998';
       document.getElementById('fQarz').value = '0';
       document.getElementById('addOverlay').classList.add('show');
       setTimeout(function () { document.getElementById('fIsm').focus(); }, 50);
@@ -509,6 +607,7 @@
       var ism = document.getElementById('fIsm').value.trim();
       var fam = document.getElementById('fFam').value.trim();
       var yil = document.getElementById('fYil').value.trim();
+      var tel = document.getElementById('fTel').value.trim();
       var qarz = Number(document.getElementById('fQarz').value) || 0;
       if (!ism && !fam) { toast('Ism yoki familiya kiriting'); return; }
       closeAddModal();
@@ -518,7 +617,7 @@
           loadData();
         })
         .withFailureHandler(function (err) { toast('Xato: ' + err.message); })
-        .addClient(ism, fam, yil, qarz);
+        .addClient(ism, fam, yil, qarz, tel);
     }
 
     // --- Tahrirlash ---
@@ -529,6 +628,7 @@
       document.getElementById('eIsm').value = c.ism;
       document.getElementById('eFam').value = c.familiya;
       document.getElementById('eYil').value = c.yil;
+      document.getElementById('eTel').value = c.telefon || '+998';
       document.getElementById('editOverlay').classList.add('show');
       setTimeout(function () { document.getElementById('eIsm').focus(); }, 50);
     }
@@ -541,18 +641,19 @@
       var ism = document.getElementById('eIsm').value.trim();
       var fam = document.getElementById('eFam').value.trim();
       var yil = document.getElementById('eYil').value.trim();
+      var tel = document.getElementById('eTel').value.trim();
       if (!ism && !fam) { toast('Ism yoki familiya kiriting'); return; }
       var row = editRow;
       closeEditModal();
       google.script.run
         .withSuccessHandler(function () {
           var c = ALL.filter(function (x) { return x.row === row; })[0];
-          if (c) { c.ism = ism; c.familiya = fam; c.yil = yil; }
+          if (c) { c.ism = ism; c.familiya = fam; c.yil = yil; c.telefon = tel; }
           render();
           toast('Ma\'lumot yangilandi');
         })
         .withFailureHandler(function (err) { toast('Xato: ' + err.message); })
-        .updateClient(row, ism, fam, yil);
+        .updateClient(row, ism, fam, yil, tel);
     }
 
     // --- O'chirish ---
@@ -571,6 +672,20 @@
     document.getElementById('search').addEventListener('input', render);
     document.getElementById('fAmount').addEventListener('keydown', function (e) {
       if (e.key === 'Enter') submitAmount();
+    });
+
+    // Yangi mijoz modalida Enter = Saqlash
+    ['fIsm','fFam','fYil','fTel','fQarz'].forEach(function(id) {
+      document.getElementById(id).addEventListener('keydown', function(e) {
+        if (e.key === 'Enter') submitAdd();
+      });
+    });
+
+    // Tahrirlash modalida Enter = Saqlash
+    ['eIsm','eFam','eYil','eTel'].forEach(function(id) {
+      document.getElementById(id).addEventListener('keydown', function(e) {
+        if (e.key === 'Enter') submitEdit();
+      });
     });
 
     loadData();
