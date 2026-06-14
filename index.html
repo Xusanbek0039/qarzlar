@@ -73,10 +73,19 @@
       background: var(--card); border: 1px solid var(--line);
       border-radius: 10px; padding: 12px 16px; flex: 1; min-width: 140px;
     }
-    .stat .label { color: var(--muted); font-size: 12px; }
+    .stat .label { color: var(--muted); font-size: 12px; display: flex; align-items: center; justify-content: space-between; gap: 6px; }
     .stat .val { font-size: 20px; font-weight: 700; margin-top: 4px; }
     .stat.danger { border-color: var(--red); background: rgba(239,68,68,.08); }
     .stat.danger .val { color: var(--red); }
+
+    /* Umumiy qarzni yashirish/ko'rsatish ko'zchasi */
+    .eye-btn {
+      background: transparent; border: none; cursor: pointer;
+      color: var(--muted); padding: 2px 4px; line-height: 0;
+      display: inline-flex; align-items: center; border-radius: 6px;
+    }
+    .eye-btn:hover { color: var(--accent); background: rgba(255,255,255,.06); }
+    .val.masked { letter-spacing: 3px; color: var(--muted); }
 
     .dash-head { display: flex; align-items: center; gap: 8px; margin: 4px 0 12px; flex-wrap: wrap; }
     .dash-head h2 { font-size: 17px; margin: 0; display: flex; align-items: center; gap: 7px; }
@@ -218,7 +227,7 @@
 
     <div class="stats">
       <div class="stat"><div class="label">Mijozlar soni</div><div class="val" id="stCount">—</div></div>
-      <div class="stat"><div class="label">Umumiy qarz</div><div class="val" id="stTotal">—</div></div>
+      <div class="stat"><div class="label">Umumiy qarz <button class="eye-btn" id="eyeList" onclick="toggleTotal()" title="Ko'rsatish / yashirish"></button></div><div class="val masked" id="stTotal">••••••</div></div>
       <div class="stat"><div class="label">Qarzdorlar</div><div class="val" id="stDebtors">—</div></div>
     </div>
 
@@ -243,7 +252,7 @@
     <!-- DASHBOARD KO'RINISHI -->
     <div id="viewDash" style="display:none">
       <div class="stats">
-        <div class="stat"><div class="label">Umumiy qarz</div><div class="val" id="dTotal">—</div></div>
+        <div class="stat"><div class="label">Umumiy qarz <button class="eye-btn" id="eyeDash" onclick="toggleTotal()" title="Ko'rsatish / yashirish"></button></div><div class="val masked" id="dTotal">••••••</div></div>
         <div class="stat"><div class="label">Jami qarzdorlar</div><div class="val" id="dDebtors">—</div></div>
         <div class="stat danger"><div class="label">1 oydan beri to'lamaganlar</div><div class="val" id="dOverdueCount">—</div></div>
         <div class="stat danger"><div class="label">Ularning qarzi</div><div class="val" id="dOverdueSum">—</div></div>
@@ -274,7 +283,7 @@
         </label>
         <input id="fTel" type="tel" placeholder="+998 XX XXX XX XX" />
       </div>
-      <div class="field"><label>Boshlang'ich qarz</label><input id="fQarz" type="number" value="0" /></div>
+      <div class="field"><label>Boshlang'ich qarz</label><input id="fQarz" type="number" placeholder="Summa kiriting" /></div>
       <div class="modal-actions">
         <button class="btn gray" onclick="closeAddModal()">Bekor</button>
         <button class="btn green" onclick="submitAdd()">Saqlash</button>
@@ -329,6 +338,8 @@
     var FILTER = 'all';
     var VIEW = 'list';
     var OVERDUE_DAYS = 30;
+    var SHOW_TOTAL = false;   // Umumiy qarz boshida yashirin
+    var LAST_TOTAL = 0;
 
     // SVG icon strings for use in JS-generated HTML
     var IC = {
@@ -337,7 +348,9 @@
       edit:  '<svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>',
       trash: '<svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>',
       phone: '<svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12 19.79 19.79 0 0 1 1.62 3.38a2 2 0 0 1 1.99-2.18H6.5a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 8.91a16 16 0 0 0 6.08 6.08l1.77-1.77a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>',
-      check: '<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>'
+      check: '<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>',
+      eye:    '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>',
+      eyeOff: '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>'
     };
 
     function switchView(v) {
@@ -370,6 +383,26 @@
     }
     function fmtSum(n) {
       return fmt(n) + " so'm";
+    }
+
+    // --- Umumiy qarzni yashirish / ko'rsatish ---
+    function toggleTotal() {
+      SHOW_TOTAL = !SHOW_TOTAL;
+      updateTotalDisplay();
+    }
+    function updateTotalDisplay() {
+      var txt = SHOW_TOTAL ? fmtSum(LAST_TOTAL) : '••••••';
+      ['stTotal', 'dTotal'].forEach(function (id) {
+        var el = document.getElementById(id);
+        if (!el) return;
+        el.textContent = txt;
+        el.classList.toggle('masked', !SHOW_TOTAL);
+      });
+      var icon = SHOW_TOTAL ? IC.eye : IC.eyeOff;
+      ['eyeList', 'eyeDash'].forEach(function (id) {
+        var b = document.getElementById(id);
+        if (b) b.innerHTML = icon;
+      });
     }
 
     function toast(msg) {
@@ -422,7 +455,8 @@
       var total = ALL.reduce(function (s, c) { return s + (Number(c.qarz) || 0); }, 0);
       var debtors = ALL.filter(function (c) { return (Number(c.qarz) || 0) > 0; }).length;
       document.getElementById('stCount').textContent = ALL.length;
-      document.getElementById('stTotal').textContent = fmtSum(total);
+      LAST_TOTAL = total;
+      updateTotalDisplay();
       document.getElementById('stDebtors').textContent = debtors;
 
       var tb = document.getElementById('tbody');
@@ -478,7 +512,8 @@
 
       var overdueSum = overdue.reduce(function (s, c) { return s + (Number(c.qarz) || 0); }, 0);
 
-      document.getElementById('dTotal').textContent = fmtSum(total);
+      LAST_TOTAL = total;
+      updateTotalDisplay();
       document.getElementById('dDebtors').textContent = debtors.length;
       document.getElementById('dOverdueCount').textContent = overdue.length;
       document.getElementById('dOverdueSum').textContent = fmtSum(overdueSum);
@@ -596,7 +631,7 @@
       document.getElementById('fFam').value = '';
       document.getElementById('fYil').value = '';
       document.getElementById('fTel').value = '+998';
-      document.getElementById('fQarz').value = '0';
+      document.getElementById('fQarz').value = '';
       document.getElementById('addOverlay').classList.add('show');
       setTimeout(function () { document.getElementById('fIsm').focus(); }, 50);
     }
@@ -688,6 +723,7 @@
       });
     });
 
+    updateTotalDisplay();  // boshida yashirin holatni va ko'zcha ikonkasini chizish
     loadData();
   </script>
 </body>
