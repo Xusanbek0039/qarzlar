@@ -144,6 +144,50 @@
     .iconbtn.sub { background: var(--red); }
     .iconbtn.edit { background: var(--blue); }
     .iconbtn.del { background: var(--line); }
+    .iconbtn.hist { background: #8b5cf6; }
+    .iconbtn.hist:hover { background: #7c3aed; }
+
+    /* Qarz tarixi modal va elementlari */
+    .hist-stats { display: flex; gap: 8px; margin-bottom: 12px; }
+    .hist-stat {
+      flex: 1; background: var(--bg); border: 1px solid var(--line);
+      border-radius: 8px; padding: 8px 10px; text-align: center;
+    }
+    .hist-stat .hl { font-size: 11px; color: var(--muted); }
+    .hist-stat .hv { font-size: 14px; font-weight: 700; margin-top: 2px; }
+
+    .hist-filt-bar { display: flex; gap: 6px; margin-bottom: 10px; }
+    .hist-filt-btn {
+      background: var(--bg); border: 1px solid var(--line); color: var(--muted);
+      font-size: 12px; padding: 5px 12px; border-radius: 6px; cursor: pointer;
+      font-weight: 500; transition: all .15s;
+    }
+    .hist-filt-btn.active {
+      background: var(--accent); color: #06283b; border-color: var(--accent); font-weight: 700;
+    }
+
+    .hist-item {
+      background: var(--bg); border: 1px solid var(--line); border-radius: 10px;
+      padding: 10px 12px; display: flex; flex-direction: column; gap: 6px;
+      border-left: 4px solid var(--line);
+    }
+    .hist-item.add { border-left-color: #f59e0b; }
+    .hist-item.sub { border-left-color: var(--green); }
+    .hist-head { display: flex; justify-content: space-between; align-items: center; font-size: 12px; }
+    .hist-date { color: var(--muted); display: inline-flex; align-items: center; gap: 4px; }
+    .hist-badge { font-size: 11px; font-weight: 700; padding: 2px 8px; border-radius: 999px; }
+    .hist-badge.add { background: rgba(245,158,11,.15); color: #fbbf24; }
+    .hist-badge.sub { background: rgba(34,197,94,.15); color: #86efac; }
+    .hist-body { display: flex; justify-content: space-between; align-items: baseline; flex-wrap: wrap; gap: 6px; }
+    .hist-amount { font-size: 16px; font-weight: 800; }
+    .hist-amount.add { color: #f59e0b; }
+    .hist-amount.sub { color: var(--green); }
+    .hist-diff { font-size: 12px; color: var(--muted); }
+    .hist-diff span { color: var(--text); font-weight: 600; }
+    .hist-note {
+      font-size: 12px; color: var(--text); background: rgba(255,255,255,.03);
+      padding: 5px 8px; border-radius: 6px; border: 1px dashed var(--line);
+    }
 
     .empty { padding: 40px; text-align: center; color: var(--muted); }
     .loading { padding: 40px; text-align: center; color: var(--muted); }
@@ -194,6 +238,10 @@
       <button class="tab" id="tabDash" onclick="switchView('dash')">
         <svg class="icon" xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/><line x1="2" y1="20" x2="22" y2="20"/></svg>
         Dashboard
+      </button>
+      <button class="tab" id="tabHist" onclick="switchView('history')">
+        <svg class="icon" xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+        Tarix
       </button>
     </div>
 
@@ -267,6 +315,54 @@
       </div>
       <div id="overdueList"></div>
     </div>
+
+    <!-- UMUMIY TARIX KO'RINISHI -->
+    <div id="viewHistory" style="display:none">
+      <div class="bar">
+        <div class="search">
+          <svg class="icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+          <input id="allHistSearch" type="text" placeholder="Mijoz ismi, izoh yoki sana bo'yicha qidirish..." autocomplete="off" />
+        </div>
+        <button class="btn gray" onclick="loadAllHistory()">
+          <svg class="icon" xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg>
+          Yangilash
+        </button>
+      </div>
+
+      <div class="bar">
+        <button class="btn filt active" id="allHFltAll" onclick="setAllHistFilter('all')">Barchasi</button>
+        <button class="btn filt" id="allHFltToday" onclick="setAllHistFilter('today')">📅 Bugun</button>
+        <button class="btn filt" id="allHFltAdd" onclick="setAllHistFilter('add')">➕ Qo'shilganlar</button>
+        <button class="btn filt" id="allHFltSub" onclick="setAllHistFilter('sub')">➖ To'lovlar</button>
+      </div>
+
+      <div class="stats">
+        <div class="stat"><div class="label">Jami amallar soni</div><div class="val" id="allHistCount">—</div></div>
+        <div class="stat"><div class="label">Bugun qo'shilgan</div><div class="val" id="allHistTodayAdd" style="color:#f59e0b;">—</div></div>
+        <div class="stat"><div class="label">Bugun to'langan</div><div class="val" id="allHistTodaySub" style="color:var(--green);">—</div></div>
+      </div>
+
+      <div class="table-card">
+        <div class="table-scroll">
+          <table>
+            <thead>
+              <tr>
+                <th>Sana va vaqt</th>
+                <th>Mijoz</th>
+                <th>Amal</th>
+                <th>Summa</th>
+                <th>Qarz o'zgarishi</th>
+                <th>Izoh</th>
+                <th>Tarix</th>
+              </tr>
+            </thead>
+            <tbody id="allHistTbody">
+              <tr><td colspan="7" class="loading">Yuklanmoqda...</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
   </div>
 
   <!-- Yangi mijoz modali -->
@@ -284,6 +380,7 @@
         <input id="fTel" type="tel" placeholder="+998 XX XXX XX XX" />
       </div>
       <div class="field"><label>Boshlang'ich qarz</label><input id="fQarz" type="number" placeholder="Summa kiriting" /></div>
+      <div class="field"><label>Izoh (boshlang'ich qarz uchun, ixtiyoriy)</label><input id="fAddComment" type="text" placeholder="Masalan: Daftardan qoldiq" autocomplete="off" /></div>
       <div class="modal-actions">
         <button class="btn gray" onclick="closeAddModal()">Bekor</button>
         <button class="btn green" onclick="submitAdd()">Saqlash</button>
@@ -322,9 +419,52 @@
         <input id="fAmount" type="number" inputmode="numeric" />
         <div id="amtError" style="display:none;margin-top:6px;padding:8px 10px;background:rgba(239,68,68,.12);border:1px solid rgba(239,68,68,.4);border-radius:7px;color:#fca5a5;font-size:13px;"></div>
       </div>
+      <div class="field">
+        <label>Izoh (ixtiyoriy)</label>
+        <input id="fComment" type="text" placeholder="Masalan: Bozorlik, non, to'lov..." autocomplete="off" />
+      </div>
       <div class="modal-actions">
         <button class="btn gray" onclick="closeAmtModal()">Bekor</button>
         <button class="btn" id="amtConfirm" onclick="submitAmount()">Tasdiqlash</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Qarz tarixi modali -->
+  <div class="overlay" id="histOverlay">
+    <div class="modal" style="max-width: 520px; max-height: 88vh; display: flex; flex-direction: column;">
+      <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:10px;">
+        <h3 id="histTitle" style="margin:0; font-size:17px; display:flex; align-items:center; gap:8px;"></h3>
+        <button class="iconbtn del" onclick="closeHistoryModal()" style="width:28px; height:28px; font-size:13px;" title="Yopish">✕</button>
+      </div>
+      <div class="sub" id="histClientMeta" style="margin-bottom:10px;"></div>
+
+      <div class="hist-stats">
+        <div class="hist-stat">
+          <div class="hl">Joriy qarz</div>
+          <div class="hv" id="histCurrentDebt" style="color:var(--accent);">0 so'm</div>
+        </div>
+        <div class="hist-stat">
+          <div class="hl">Jami qo'shilgan</div>
+          <div class="hv" id="histTotalAdded" style="color:#f59e0b;">0 so'm</div>
+        </div>
+        <div class="hist-stat">
+          <div class="hl">Jami to'langan</div>
+          <div class="hv" id="histTotalSubbed" style="color:var(--green);">0 so'm</div>
+        </div>
+      </div>
+
+      <div class="hist-filt-bar">
+        <button class="hist-filt-btn active" id="hFltAll" onclick="setHistFilter('all')">Hammasi</button>
+        <button class="hist-filt-btn" id="hFltAdd" onclick="setHistFilter('add')">➕ Qo'shilganlar</button>
+        <button class="hist-filt-btn" id="hFltSub" onclick="setHistFilter('sub')">➖ To'lovlar</button>
+      </div>
+
+      <div id="histList" style="overflow-y:auto; flex:1; display:flex; flex-direction:column; gap:8px; padding-right:2px; min-height: 120px;">
+      </div>
+
+      <div class="modal-actions" style="margin-top:12px;">
+        <button class="btn gray" onclick="closeHistoryModal()" style="width:100%; justify-content:center;">Yopish</button>
       </div>
     </div>
   </div>
@@ -350,16 +490,27 @@
       phone: '<svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12 19.79 19.79 0 0 1 1.62 3.38a2 2 0 0 1 1.99-2.18H6.5a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 8.91a16 16 0 0 0 6.08 6.08l1.77-1.77a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>',
       check: '<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>',
       eye:    '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>',
-      eyeOff: '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>'
+      eyeOff: '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>',
+      clock:  '<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>'
     };
+
+    var curHistClient = null;
+    var curHistData = [];
+    var histFilter = 'all';
+
+    var GLOBAL_HISTORY = [];
+    var allHistFilter = 'all';
 
     function switchView(v) {
       VIEW = v;
       document.getElementById('tabList').classList.toggle('active', v === 'list');
       document.getElementById('tabDash').classList.toggle('active', v === 'dash');
+      document.getElementById('tabHist').classList.toggle('active', v === 'history');
       document.getElementById('viewList').style.display = v === 'list' ? '' : 'none';
       document.getElementById('viewDash').style.display = v === 'dash' ? '' : 'none';
+      document.getElementById('viewHistory').style.display = v === 'history' ? '' : 'none';
       if (v === 'dash') renderDash();
+      if (v === 'history') loadAllHistory();
     }
 
     function sanaCell(c) {
@@ -487,6 +638,7 @@
           '<td><div class="actions">' +
           '<button class="iconbtn add" title="Qo\'shish" onclick="openAmt(' + c.row + ',1,\'' + jsstr(nm) + '\')">' + IC.plus + '</button>' +
           '<button class="iconbtn sub" title="Ayirish" onclick="openAmt(' + c.row + ',-1,\'' + jsstr(nm) + '\')">' + IC.minus + '</button>' +
+          '<button class="iconbtn hist" title="Qarz tarixi" onclick="openHistory(' + c.row + ',\'' + jsstr(nm) + '\')">' + IC.clock + '</button>' +
           '<button class="iconbtn edit" title="Tahrirlash" onclick="openEdit(' + c.row + ')">' + IC.edit + '</button>' +
           '<button class="iconbtn del" title="O\'chirish" onclick="removeClient(' + c.row + ',\'' + jsstr(nm) + '\')">' + IC.trash + '</button>' +
           '</div></td>' +
@@ -552,6 +704,7 @@
           badge +
           '</div>' +
           '<div class="od-actions">' +
+          '<button class="iconbtn hist" title="Qarz tarixi" onclick="openHistory(' + c.row + ',\'' + jnm + '\')">' + IC.clock + '</button>' +
           '<button class="iconbtn sub" title="To\'lov (ayirish)" onclick="openAmt(' + c.row + ',-1,\'' + jnm + '\')">' + IC.minus + '</button>' +
           '<button class="iconbtn add" title="Qo\'shish" onclick="openAmt(' + c.row + ',1,\'' + jnm + '\')">' + IC.plus + '</button>' +
           '</div>' +
@@ -580,6 +733,7 @@
       var inp = document.getElementById('fAmount');
       inp.value = '';
       inp.style.borderColor = '';
+      document.getElementById('fComment').value = '';
       document.getElementById('amtError').style.display = 'none';
       document.getElementById('amtOverlay').classList.add('show');
       setTimeout(function () { inp.focus(); }, 50);
@@ -600,6 +754,7 @@
     function submitAmount() {
       if (!amtCtx) return;
       var v = Number(document.getElementById('fAmount').value);
+      var comment = document.getElementById('fComment').value.trim();
       var errEl = document.getElementById('amtError');
       errEl.style.display = 'none';
       document.getElementById('fAmount').style.borderColor = '';
@@ -617,12 +772,28 @@
       google.script.run
         .withSuccessHandler(function (newVal) {
           var c = ALL.filter(function (x) { return x.row === row; })[0];
-          if (c) c.qarz = newVal;
+          if (c) {
+            c.qarz = newVal;
+            if (delta < 0) {
+              var now = new Date();
+              var dd = String(now.getDate()).padStart(2, '0');
+              var mm = String(now.getMonth() + 1).padStart(2, '0');
+              var yyyy = now.getFullYear();
+              c.sana = dd + '.' + mm + '.' + yyyy;
+              c.kun = 0;
+            }
+          }
           render();
           toast('Saqlandi. Yangi qarz: ' + fmtSum(newVal));
+          if (curHistClient && curHistClient.row === row) {
+            openHistory(row, curHistClient.ism + ' ' + curHistClient.familiya);
+          }
+          if (VIEW === 'history') {
+            loadAllHistory();
+          }
         })
         .withFailureHandler(function (err) { toast('Xato: ' + err.message); })
-        .changeDebt(row, delta);
+        .changeDebt(row, delta, comment);
     }
 
     // --- Yangi mijoz ---
@@ -632,6 +803,7 @@
       document.getElementById('fYil').value = '';
       document.getElementById('fTel').value = '+998';
       document.getElementById('fQarz').value = '';
+      document.getElementById('fAddComment').value = '';
       document.getElementById('addOverlay').classList.add('show');
       setTimeout(function () { document.getElementById('fIsm').focus(); }, 50);
     }
@@ -644,15 +816,17 @@
       var yil = document.getElementById('fYil').value.trim();
       var tel = document.getElementById('fTel').value.trim();
       var qarz = Number(document.getElementById('fQarz').value) || 0;
+      var comment = document.getElementById('fAddComment').value.trim();
       if (!ism && !fam) { toast('Ism yoki familiya kiriting'); return; }
       closeAddModal();
       google.script.run
         .withSuccessHandler(function () {
           toast('Mijoz qo\'shildi');
           loadData();
+          if (VIEW === 'history') loadAllHistory();
         })
         .withFailureHandler(function (err) { toast('Xato: ' + err.message); })
-        .addClient(ism, fam, yil, qarz, tel);
+        .addClient(ism, fam, yil, qarz, tel, comment);
     }
 
     // --- Tahrirlash ---
@@ -698,19 +872,256 @@
         .withSuccessHandler(function () {
           toast('O\'chirildi');
           loadData();
+          if (VIEW === 'history') loadAllHistory();
         })
         .withFailureHandler(function (err) { toast('Xato: ' + err.message); })
         .deleteClient(row);
     }
 
+    // ==========================================
+    // MIJOZ QARZ TARIXI (PER-CLIENT HISTORY)
+    // ==========================================
+    function openHistory(row, name) {
+      var c = ALL.filter(function (x) { return x.row === row; })[0];
+      if (!c) return;
+      curHistClient = c;
+      histFilter = 'all';
+
+      var fullName = (c.ism + ' ' + c.familiya).trim() || name || 'Mijoz';
+      document.getElementById('histTitle').innerHTML = IC.clock + ' ' + esc(fullName) + ' — Qarz tarixi';
+
+      var metaParts = ['No: ' + esc(c.no)];
+      if (c.yil) metaParts.push(esc(c.yil) + '-yil');
+      if (c.telefon) metaParts.push('Tel: ' + esc(c.telefon));
+      document.getElementById('histClientMeta').textContent = metaParts.join(' · ');
+      document.getElementById('histCurrentDebt').textContent = fmtSum(c.qarz);
+      document.getElementById('histTotalAdded').textContent = '...';
+      document.getElementById('histTotalSubbed').textContent = '...';
+
+      setHistFilter('all', false);
+
+      document.getElementById('histList').innerHTML = '<div class="loading" style="padding:24px 0">Tarix yuklanmoqda...</div>';
+      document.getElementById('histOverlay').classList.add('show');
+
+      google.script.run
+        .withSuccessHandler(function (data) {
+          curHistData = data || [];
+          renderClientHistory();
+        })
+        .withFailureHandler(function (err) {
+          document.getElementById('histList').innerHTML =
+            '<div class="empty" style="color:var(--red);padding:24px 0">Xato: ' + esc(err.message) + '</div>';
+        })
+        .getClientHistory(c.no, (c.ism + ' ' + c.familiya).trim());
+    }
+
+    function closeHistoryModal() {
+      document.getElementById('histOverlay').classList.remove('show');
+      curHistClient = null;
+      curHistData = [];
+    }
+
+    function setHistFilter(f, doRender) {
+      histFilter = f;
+      document.getElementById('hFltAll').classList.toggle('active', f === 'all');
+      document.getElementById('hFltAdd').classList.toggle('active', f === 'add');
+      document.getElementById('hFltSub').classList.toggle('active', f === 'sub');
+      if (doRender !== false) renderClientHistory();
+    }
+
+    function renderClientHistory() {
+      var totalAdded = 0;
+      var totalSubbed = 0;
+
+      curHistData.forEach(function (item) {
+        var isAdd = item.amal === "Qo'shish" || item.amal === "Boshlang'ich qarz";
+        if (isAdd) {
+          totalAdded += Number(item.summa) || 0;
+        } else {
+          totalSubbed += Number(item.summa) || 0;
+        }
+      });
+
+      document.getElementById('histTotalAdded').textContent = '+' + fmtSum(totalAdded);
+      document.getElementById('histTotalSubbed').textContent = '-' + fmtSum(totalSubbed);
+
+      var list = curHistData.filter(function (item) {
+        var isAdd = item.amal === "Qo'shish" || item.amal === "Boshlang'ich qarz";
+        if (histFilter === 'add') return isAdd;
+        if (histFilter === 'sub') return !isAdd;
+        return true;
+      });
+
+      var box = document.getElementById('histList');
+      if (!curHistData.length) {
+        var hintSana = curHistClient && curHistClient.sana ? 'Oxirgi to\'lov: ' + esc(curHistClient.sana) : '';
+        box.innerHTML =
+          '<div class="empty" style="padding:24px 10px;text-align:center;">' +
+            '<div style="font-size:26px;margin-bottom:6px">📋</div>' +
+            '<div style="font-weight:700;margin-bottom:4px">Tarix hozircha bo\'sh</div>' +
+            '<div class="muted" style="font-size:12px;line-height:1.5;">Bu mijozga yangi qarz qo\'shilsa yoki to\'lov qilinsa, har bir o\'zgarish sanasi va summasi bilan bu yerda saqlanadi.</div>' +
+            (hintSana ? '<div style="margin-top:8px;font-size:12px;color:var(--accent);">' + hintSana + '</div>' : '') +
+          '</div>';
+        return;
+      }
+
+      if (!list.length) {
+        box.innerHTML = '<div class="empty" style="padding:24px 0">Ushbu filtr bo\'yicha amallar topilmadi</div>';
+        return;
+      }
+
+      var html = '';
+      list.forEach(function (item) {
+        var isAdd = item.amal === "Qo'shish" || item.amal === "Boshlang'ich qarz";
+        var cls = isAdd ? 'add' : 'sub';
+        var badgeLabel = item.amal === "Boshlang'ich qarz" ? "Boshlang'ich qarz" : (isAdd ? "Qarz qo'shildi" : "To'lov qilindi");
+        var sign = isAdd ? '+' : '-';
+        var noteHtml = item.izoh ? '<div class="hist-note">💬 ' + esc(item.izoh) + '</div>' : '';
+
+        html +=
+          '<div class="hist-item ' + cls + '">' +
+            '<div class="hist-head">' +
+              '<span class="hist-date">' + IC.clock + ' ' + esc(item.sana) + '</span>' +
+              '<span class="hist-badge ' + cls + '">' + badgeLabel + '</span>' +
+            '</div>' +
+            '<div class="hist-body">' +
+              '<div class="hist-amount ' + cls + '">' + sign + fmtSum(item.summa) + '</div>' +
+              '<div class="hist-diff">Oldingi: <span>' + fmt(item.oldQarz) + '</span> ➔ Yangi: <span>' + fmtSum(item.yangiQarz) + '</span></div>' +
+            '</div>' +
+            noteHtml +
+          '</div>';
+      });
+
+      box.innerHTML = html;
+    }
+
+    // ==========================================
+    // BARCHA AMALLAR TARIXI (GLOBAL HISTORY)
+    // ==========================================
+    function loadAllHistory() {
+      var tb = document.getElementById('allHistTbody');
+      if (tb) tb.innerHTML = '<tr><td colspan="7" class="loading">Tarix yuklanmoqda...</td></tr>';
+
+      google.script.run
+        .withSuccessHandler(function (data) {
+          GLOBAL_HISTORY = data || [];
+          renderAllHistory();
+        })
+        .withFailureHandler(function (err) {
+          if (tb) tb.innerHTML = '<tr><td colspan="7" class="empty">Xato: ' + esc(err.message) + '</td></tr>';
+        })
+        .getAllHistory();
+    }
+
+    function setAllHistFilter(f) {
+      allHistFilter = f;
+      document.getElementById('allHFltAll').classList.toggle('active', f === 'all');
+      document.getElementById('allHFltToday').classList.toggle('active', f === 'today');
+      document.getElementById('allHFltAdd').classList.toggle('active', f === 'add');
+      document.getElementById('allHFltSub').classList.toggle('active', f === 'sub');
+      renderAllHistory();
+    }
+
+    function renderAllHistory() {
+      var searchInput = document.getElementById('allHistSearch');
+      var q = (searchInput ? searchInput.value : '').toLowerCase().trim();
+
+      var now = new Date();
+      var dd = String(now.getDate()).padStart(2, '0');
+      var mm = String(now.getMonth() + 1).padStart(2, '0');
+      var yyyy = now.getFullYear();
+      var todayPrefix = dd + '.' + mm + '.' + yyyy;
+
+      var todayAddSum = 0;
+      var todaySubSum = 0;
+
+      GLOBAL_HISTORY.forEach(function (item) {
+        var isToday = item.sana && item.sana.indexOf(todayPrefix) === 0;
+        if (isToday) {
+          var isAdd = item.amal === "Qo'shish" || item.amal === "Boshlang'ich qarz";
+          if (isAdd) {
+            todayAddSum += Number(item.summa) || 0;
+          } else {
+            todaySubSum += Number(item.summa) || 0;
+          }
+        }
+      });
+
+      document.getElementById('allHistCount').textContent = GLOBAL_HISTORY.length;
+      document.getElementById('allHistTodayAdd').textContent = '+' + fmtSum(todayAddSum);
+      document.getElementById('allHistTodaySub').textContent = '-' + fmtSum(todaySubSum);
+
+      var list = GLOBAL_HISTORY.filter(function (item) {
+        var isAdd = item.amal === "Qo'shish" || item.amal === "Boshlang'ich qarz";
+        var isToday = item.sana && item.sana.indexOf(todayPrefix) === 0;
+
+        if (allHistFilter === 'today' && !isToday) return false;
+        if (allHistFilter === 'add' && !isAdd) return false;
+        if (allHistFilter === 'sub' && isAdd) return false;
+
+        if (!q) return true;
+        return (
+          String(item.clientName || '').toLowerCase().indexOf(q) >= 0 ||
+          String(item.clientNo || '').toLowerCase().indexOf(q) >= 0 ||
+          String(item.izoh || '').toLowerCase().indexOf(q) >= 0 ||
+          String(item.sana || '').toLowerCase().indexOf(q) >= 0 ||
+          String(item.summa || '').indexOf(q) >= 0
+        );
+      });
+
+      var tb = document.getElementById('allHistTbody');
+      if (!list.length) {
+        tb.innerHTML = '<tr><td colspan="7" class="empty">' +
+          (q ? 'Qidiruv bo\'yicha hech narsa topilmadi' : 'Tarix yozuvlari mavjud emas') + '</td></tr>';
+        return;
+      }
+
+      var html = '';
+      list.forEach(function (item) {
+        var isAdd = item.amal === "Qo'shish" || item.amal === "Boshlang'ich qarz";
+        var sign = isAdd ? '+' : '-';
+        var color = isAdd ? '#f59e0b' : 'var(--green)';
+        var badgeClass = isAdd ? 'hist-badge add' : 'hist-badge sub';
+        var badgeLabel = item.amal === "Boshlang'ich qarz" ? "Boshlang'ich" : (isAdd ? "Qo'shish" : "To'lov");
+
+        var clientMatch = ALL.filter(function (x) {
+          return (item.clientNo && String(x.no) === String(item.clientNo)) ||
+                 ((x.ism + ' ' + x.familiya).trim().toLowerCase() === String(item.clientName).toLowerCase());
+        })[0];
+        var clientRow = clientMatch ? clientMatch.row : null;
+
+        var clientBtn = clientRow
+          ? '<button class="iconbtn hist" style="width:26px;height:26px;" title="Mijoz tarixini ko\'rish" onclick="openHistory(' + clientRow + ',\'' + jsstr(item.clientName) + '\')">' + IC.clock + '</button>'
+          : '—';
+
+        html +=
+          '<tr>' +
+            '<td><span style="display:inline-flex;align-items:center;gap:4px">' + IC.clock + esc(item.sana) + '</span></td>' +
+            '<td><strong>' + esc(item.clientName || '(Noma\'lum)') + '</strong>' + (item.clientNo ? ' <span class="muted">(№' + esc(item.clientNo) + ')</span>' : '') + '</td>' +
+            '<td><span class="' + badgeClass + '">' + badgeLabel + '</span></td>' +
+            '<td style="font-weight:700;color:' + color + '">' + sign + fmtSum(item.summa) + '</td>' +
+            '<td><span class="muted">' + fmt(item.oldQarz) + '</span> ➔ <strong>' + fmtSum(item.yangiQarz) + '</strong></td>' +
+            '<td>' + (item.izoh ? '💬 ' + esc(item.izoh) : '<span class="muted">—</span>') + '</td>' +
+            '<td>' + clientBtn + '</td>' +
+          '</tr>';
+      });
+
+      tb.innerHTML = html;
+    }
+
     // Qidiruv real vaqtda
     document.getElementById('search').addEventListener('input', render);
+    document.getElementById('allHistSearch').addEventListener('input', renderAllHistory);
+
     document.getElementById('fAmount').addEventListener('keydown', function (e) {
+      if (e.key === 'Enter') submitAmount();
+    });
+    document.getElementById('fComment').addEventListener('keydown', function (e) {
       if (e.key === 'Enter') submitAmount();
     });
 
     // Yangi mijoz modalida Enter = Saqlash
-    ['fIsm','fFam','fYil','fTel','fQarz'].forEach(function(id) {
+    ['fIsm','fFam','fYil','fTel','fQarz','fAddComment'].forEach(function(id) {
       document.getElementById(id).addEventListener('keydown', function(e) {
         if (e.key === 'Enter') submitAdd();
       });

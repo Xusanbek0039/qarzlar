@@ -7,14 +7,27 @@ Jadval: **No · Ism · Familiya · Tug‘ilgan yil · Joriy Qarz · Qo'shish · 
 - 🔍 **Qidirish** — ism, familiya, tug‘ilgan yil yoki No bo‘yicha (real vaqtda)
 - 📋 **Jadval previev** — barcha mijozlar va joriy qarzi ko‘rinadi
 - 🔘 **Filtr tugmalari** — Hammasi · ⚠️ Qarz to‘lamayotganlar · ✅ Qarzi yo‘qlar
-- ➕ **Qo'shish** — mijoz qarzini oshirish (yangi xarid)
-- ➖ **Ayirish** — qarzni kamaytirish (to‘lov)
+- ➕ **Qo'shish** — mijoz qarzini oshirish (ixtiyoriy izoh bilan)
+- ➖ **Ayirish** — qarzni kamaytirish / to‘lov (ixtiyoriy izoh bilan)
+- 🕒 **Mijoz qarz tarixi** — har bir mijoz qatorida soat (tarix) tugmasi: qachon qancha qarz qo'shilgan, qachon to'langan, oldingi va yangi qarz holati va izohlari ko'rinadi
+- 📑 **Umumiy Tarix oynasi** — do'konda amalga oshirilgan barcha amallar xronologiyasi, bugungi qarzlar va to'lovlar summasi
 - ✏️ **Tahrirlash** — mijozni qidirib, ism/familiya/tug‘ilgan yilini o‘zgartirish
 - 👤 **Yangi mijoz** qo‘shish, 🗑 mijozni o‘chirish
 - 📊 **Dashboard** — **1 oydan beri qarz to‘lamaganlar** alohida chiroyli kartalarda
-  (qancha vaqt to‘lamagani, qarzi va tezkor +/− tugmalari bilan)
+  (qancha vaqt to‘lamagani, qarzi, tarix va tezkor +/− tugmalari bilan)
 - 📱 Telefon va kompyuterga **moslashuvchan (responsive)** dizayn
 - 📈 Statistika: mijozlar soni, umumiy qarz, qarzdorlar soni
+
+### "Qarz tarixi" va "Tarix" varag'i qanday ishlaydi
+- Har safar mijozga qarz qo'shilganda yoki to'lov (ayirish) qilinganda:
+  - **Sana va vaqt** (masalan: `18.09.2026 14:35`)
+  - **Mijoz No va ismi**
+  - **Amal turi** (Qo'shish yoki Ayirish / To'lov)
+  - **Summa** (masalan: 10 000 so'm)
+  - **Oldingi qarz va Yangi qarz**
+  - **Izoh** (ixtiyoriy kiritilgan sabab yoki izoh)
+- Bu ma'lumotlar Google Sheet'dagi **`"Tarix"`** varag'iga avtomatik yoziladi va saqlanadi.
+- Mijoz qatoridagi **🕒** tugmasini bosib, uning barcha o'tmishdagi qarz va to'lovlari tarixini ko'rishingiz mumkin (bugun, ertaga yoki 1 oydan keyin ham to'liq saqlanadi).
 
 ### "Oxirgi to'lov" sanasi qanday ishlaydi
 - Jadvalga **"Oxirgi to‘lov"** ustuni avtomatik qo‘shiladi (qo‘lda qo‘shish shart emas).

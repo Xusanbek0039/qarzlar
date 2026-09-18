@@ -11,7 +11,8 @@
 // Agar bu skript Google Sheet'ga biriktirilgan bo'lsa, SHEET_ID ni bo'sh qoldiring.
 // Aks holda, jadval ID sini shu yerga yozing:
 var SHEET_ID = '1ThHNVw2ljaogQNCRk5JormjxoJXtiKbT_poVKQEsL_Q';
-var SHEET_NAME = ''; // bo'sh bo'lsa — birinchi varaq ishlatiladi
+var SHEET_NAME = ''; // bo'sh bo'lsa — birinchi mijozlar varag'i ishlatiladi
+var HISTORY_SHEET_NAME = 'Tarix';
 
 function doGet() {
   return HtmlService.createHtmlOutputFromFile('index')
@@ -22,9 +23,71 @@ function doGet() {
 function getSheet_() {
   var ss = SHEET_ID ? SpreadsheetApp.openById(SHEET_ID) : SpreadsheetApp.getActiveSpreadsheet();
   if (!ss) throw new Error('Jadval topilmadi. SHEET_ID ni tekshiring.');
-  var sheet = SHEET_NAME ? ss.getSheetByName(SHEET_NAME) : ss.getSheets()[0];
-  if (!sheet) throw new Error('Varaq topilmadi.');
+  if (SHEET_NAME) {
+    var s = ss.getSheetByName(SHEET_NAME);
+    if (s) return s;
+  }
+  // Agar SHEET_NAME bo'sh bo'lsa, 'Tarix' bo'lmagan birinchi varaqni olamiz
+  var sheets = ss.getSheets();
+  for (var i = 0; i < sheets.length; i++) {
+    if (sheets[i].getName() !== HISTORY_SHEET_NAME) {
+      return sheets[i];
+    }
+  }
+  return sheets[0];
+}
+
+// Qarz tarixi varag'ini ta'minlaydi (yo'q bo'lsa yaratadi)
+function getHistorySheet_() {
+  var ss = SHEET_ID ? SpreadsheetApp.openById(SHEET_ID) : SpreadsheetApp.getActiveSpreadsheet();
+  if (!ss) throw new Error('Jadval topilmadi. SHEET_ID ni tekshiring.');
+  var sheet = ss.getSheetByName(HISTORY_SHEET_NAME);
+  if (!sheet) {
+    sheet = ss.insertSheet(HISTORY_SHEET_NAME);
+    sheet.appendRow([
+      'ID',
+      'Sana va vaqt',
+      'Mijoz No',
+      'Mijoz Ismi',
+      'Telefon',
+      'Amal',
+      'Summa',
+      'Oldingi qarz',
+      'Yangi qarz',
+      'Izoh'
+    ]);
+    var headerRange = sheet.getRange(1, 1, 1, 10);
+    headerRange.setFontWeight('bold');
+    headerRange.setBackground('#1e293b');
+    headerRange.setFontColor('#ffffff');
+    sheet.setFrozenRows(1);
+  }
   return sheet;
+}
+
+// Tarixga yozuv qo'shish
+function recordHistory_(item) {
+  try {
+    var histSheet = getHistorySheet_();
+    var tz = Session.getScriptTimeZone() || 'Asia/Tashkent';
+    var now = new Date();
+    var dateStr = Utilities.formatDate(now, tz, 'dd.MM.yyyy HH:mm:ss');
+    var id = String(now.getTime());
+    histSheet.appendRow([
+      id,
+      dateStr,
+      item.clientNo !== undefined ? item.clientNo : '',
+      item.clientName || '',
+      item.telefon || '',
+      item.amal || '',
+      Number(item.summa) || 0,
+      Number(item.oldQarz) || 0,
+      Number(item.yangiQarz) || 0,
+      item.izoh || ''
+    ]);
+  } catch (e) {
+    Logger.log('Tarix yozishda xatolik: ' + e.message);
+  }
 }
 
 // Sarlavhalar bo'yicha ustun indekslarini topadi (moslashuvchan)
@@ -129,7 +192,7 @@ function getClients() {
 }
 
 // Qarzni o'zgartirish: amount musbat = qo'shish, manfiy = ayirish
-function changeDebt(row, amount) {
+function changeDebt(row, amount, comment) {
   var lock = LockService.getScriptLock();
   lock.waitLock(10000);
   try {
@@ -151,6 +214,29 @@ function changeDebt(row, amount) {
         sheet.getRange(row, sanaCol).setValue(new Date());
       }
     }
+
+    // Tarixga yozish
+    var clientNo = h.no >= 0 ? sheet.getRange(row, h.no + 1).getValue() : (row - 1);
+    var ism = h.ism >= 0 ? sheet.getRange(row, h.ism + 1).getValue() : '';
+    var fam = h.familiya >= 0 ? sheet.getRange(row, h.familiya + 1).getValue() : '';
+    var tel = h.telefon >= 0 ? sheet.getRange(row, h.telefon + 1).getValue() : '';
+    var clientName = (String(ism || '') + ' ' + String(fam || '')).trim();
+
+    var isAdd = Number(amount) > 0;
+    var amal = isAdd ? "Qo'shish" : "Ayirish";
+    var defaultIzoh = isAdd ? "Qarz qo'shildi" : "Qarz to'landi (ayirildi)";
+
+    recordHistory_({
+      clientNo: clientNo,
+      clientName: clientName,
+      telefon: tel,
+      amal: amal,
+      summa: Math.abs(Number(amount)),
+      oldQarz: cur,
+      yangiQarz: next,
+      izoh: comment ? String(comment).trim() : defaultIzoh
+    });
+
     return next;
   } finally {
     lock.releaseLock();
@@ -158,7 +244,7 @@ function changeDebt(row, amount) {
 }
 
 // Yangi mijoz qo'shish
-function addClient(ism, familiya, yil, qarz, telefon) {
+function addClient(ism, familiya, yil, qarz, telefon, comment) {
   var lock = LockService.getScriptLock();
   lock.waitLock(10000);
   try {
@@ -169,23 +255,133 @@ function addClient(ism, familiya, yil, qarz, telefon) {
     var lastCol = Math.max(sheet.getLastColumn(), 7);
     var rowData = new Array(lastCol).fill('');
     // No ustuni — avtomatik tartib raqami
-    if (h.no >= 0) rowData[h.no] = lastRow; // sarlavhadan keyingi tartib
+    var clientNo = lastRow;
+    if (h.no >= 0) rowData[h.no] = clientNo; // sarlavhadan keyingi tartib
     if (h.ism >= 0) rowData[h.ism] = ism;
     if (h.familiya >= 0) rowData[h.familiya] = familiya;
     if (h.yil >= 0) rowData[h.yil] = yil;
-    if (h.qarz >= 0) rowData[h.qarz] = Number(qarz) || 0;
+    var initialDebt = Number(qarz) || 0;
+    if (h.qarz >= 0) rowData[h.qarz] = initialDebt;
     var telCol = ensureTelefonCol_(sheet) - 1; // 0-based
     if (telCol < rowData.length) rowData[telCol] = telefon || '';
     sheet.getRange(newRow, 1, 1, lastCol).setValues([rowData]);
-    // Boshlang'ich qarz bo'lsa — boshlanish sanasini yozamiz
-    if ((Number(qarz) || 0) > 0) {
+    // Boshlang'ich qarz bo'lsa — boshlanish sanasini yozamiz va tarixga kiritamiz
+    if (initialDebt > 0) {
       var sanaCol = ensureSanaCol_(sheet);
       sheet.getRange(newRow, sanaCol).setValue(new Date());
+
+      recordHistory_({
+        clientNo: clientNo,
+        clientName: (String(ism || '') + ' ' + String(familiya || '')).trim(),
+        telefon: telefon || '',
+        amal: "Boshlang'ich qarz",
+        summa: initialDebt,
+        oldQarz: 0,
+        yangiQarz: initialDebt,
+        izoh: comment ? String(comment).trim() : "Mijoz yaratilgandagi boshlang'ich qarz"
+      });
     }
     return { row: newRow };
   } finally {
     lock.releaseLock();
   }
+}
+
+// Muayyan bir mijozning qarz tarixini olish
+function getClientHistory(clientNo, clientName) {
+  var sheet = getHistorySheet_();
+  var lastRow = sheet.getLastRow();
+  if (lastRow < 2) return [];
+
+  var lastCol = Math.max(sheet.getLastColumn(), 10);
+  var data = sheet.getRange(2, 1, lastRow - 1, lastCol).getValues();
+  var tz = Session.getScriptTimeZone() || 'Asia/Tashkent';
+  var list = [];
+
+  var cNoStr = clientNo !== undefined && clientNo !== null ? String(clientNo).trim() : '';
+  var cNameStr = clientName ? String(clientName).trim().toLowerCase() : '';
+
+  for (var i = 0; i < data.length; i++) {
+    var r = data[i];
+    var rowNo = String(r[2] || '').trim();
+    var rowName = String(r[3] || '').trim();
+
+    var match = false;
+    if (cNoStr && rowNo && rowNo === cNoStr) {
+      match = true;
+    } else if (cNameStr && rowName && rowName.toLowerCase() === cNameStr) {
+      match = true;
+    }
+
+    if (!match) continue;
+
+    var rawDate = r[1];
+    var sanaStr = '';
+    if (rawDate instanceof Date) {
+      sanaStr = Utilities.formatDate(rawDate, tz, 'dd.MM.yyyy HH:mm');
+    } else {
+      sanaStr = String(rawDate || '');
+    }
+
+    list.push({
+      id: String(r[0] || ''),
+      sana: sanaStr,
+      clientNo: rowNo,
+      clientName: rowName,
+      telefon: String(r[4] || ''),
+      amal: String(r[5] || ''),
+      summa: Number(r[6]) || 0,
+      oldQarz: Number(r[7]) || 0,
+      yangiQarz: Number(r[8]) || 0,
+      izoh: String(r[9] || '')
+    });
+  }
+
+  list.reverse();
+  return list;
+}
+
+// Barcha mijozlarning operatsiyalar tarixini olish (oxirgilari)
+function getAllHistory(limit) {
+  var sheet = getHistorySheet_();
+  var lastRow = sheet.getLastRow();
+  if (lastRow < 2) return [];
+
+  var maxItems = Number(limit) || 300;
+  var startRow = Math.max(2, lastRow - maxItems + 1);
+  var numRows = lastRow - startRow + 1;
+  var lastCol = Math.max(sheet.getLastColumn(), 10);
+
+  var data = sheet.getRange(startRow, 1, numRows, lastCol).getValues();
+  var tz = Session.getScriptTimeZone() || 'Asia/Tashkent';
+  var list = [];
+
+  for (var i = 0; i < data.length; i++) {
+    var r = data[i];
+    var rawDate = r[1];
+    var sanaStr = '';
+    if (rawDate instanceof Date) {
+      sanaStr = Utilities.formatDate(rawDate, tz, 'dd.MM.yyyy HH:mm');
+    } else {
+      sanaStr = String(rawDate || '');
+    }
+
+    list.push({
+      id: String(r[0] || ''),
+      sana: sanaStr,
+      clientNo: String(r[2] || '').trim(),
+      clientName: String(r[3] || '').trim(),
+      telefon: String(r[4] || ''),
+      amal: String(r[5] || ''),
+      summa: Number(r[6]) || 0,
+      oldQarz: Number(r[7]) || 0,
+      yangiQarz: Number(r[8]) || 0,
+      izoh: String(r[9] || '')
+    });
+  }
+
+  list.reverse();
+  return list;
 }
 
 // Mijoz ma'lumotlarini tahrirlash (qarzga tegmaydi)
